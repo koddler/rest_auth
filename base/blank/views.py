@@ -3,6 +3,7 @@ import json
 from rest_framework import views, viewsets
 from rest_framework.response import Response
 
+from .auth import TokenBasedAuthentication
 from .models import Token, User
 from .serializers import UserSerializer
 
@@ -10,6 +11,7 @@ from .serializers import UserSerializer
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    authentication_classes = [TokenBasedAuthentication]
 
 
 class RegistrationView(views.APIView):
