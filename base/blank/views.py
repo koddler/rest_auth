@@ -16,15 +16,23 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class RegistrationView(views.APIView):
     def post(self, request):
-        user = User(
-            username=request.data['username'],
-            password=request.data['password']
-        )
-        user.save()
+        try:
+            user = User.objects.get(username=request.data['username'])
+        except User.DoesNotExist:
+            user = User(
+                username=request.data['username'],
+                password=request.data['password']
+            )
+            user.save()
+
+            return Response(
+                json.dumps({'message': 'User created'}),
+                status=200
+            )
 
         return Response(
-            json.dumps({"message": "created"}),
-            status=200
+            json.dumps({'error': 'Username already taken'}),
+            status=409
         )
 
 
