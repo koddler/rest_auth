@@ -65,7 +65,7 @@ class LogoutView(views.APIView):
     """
 
     def post(self, request):
-        key = Utilities.get_token(request)
+        key = Utilities.get_token_from_header(request)
         try:
             token = Token.objects.get(key=key)
         except Token.DoesNotExist:

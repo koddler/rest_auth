@@ -6,13 +6,16 @@ from .models import Token, User
 
 class TokenBasedAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        token = Utilities.get_token(request)
+        token = Utilities.get_token_from_header(request)
         return self.get_token_user(token), None
 
     def get_token_user(self, token):
-        t = Token.objects.get(key=token)
-        user = t.user
+        try:
+            t = Token.objects.get(key=token)
+        except Token.DoesNotExist:
+            raise AuthenticationFailed('Invalid user')
 
+        user = t.user
         if user is None:
             raise AuthenticationFailed('Invalid user')
 
@@ -21,7 +24,7 @@ class TokenBasedAuthentication(BaseAuthentication):
 
 class Utilities:
     @staticmethod
-    def get_token(request):
+    def get_token_from_header(request):
         header = get_authorization_header(request)
         if header is None:
             return None
