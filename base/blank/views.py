@@ -3,7 +3,7 @@ import json
 from rest_framework import views, viewsets
 from rest_framework.response import Response
 
-from .auth import TokenBasedAuthentication
+from .auth import TokenBasedAuthentication, Utilities
 from .models import Token, User
 from .serializers import UserSerializer
 
@@ -30,19 +30,12 @@ class RegistrationView(views.APIView):
 
 class LoginView(views.APIView):
     def post(self, request):
-        try:
-            user = User.objects.get(username=request.data['username'])
-        except User.DoesNotExist:
-            return Response(
-                json.dumps({'message': 'User does not exist'}),
-                status=401
-            )
-
+        user = Utilities.get_user(request)
         password = request.data['password']
         is_correct_password = user.check_password(password)
 
         if(is_correct_password):
-            token = Token()
+            token = Utilities.get_or_create_user_token(user)
             token.user = user
             token.save()
             return Response(

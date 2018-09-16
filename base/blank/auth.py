@@ -38,3 +38,31 @@ class Utilities:
 
         # using decode because token[1] is a bytes type data
         return token[1].decode('utf-8')
+
+    @staticmethod
+    def get_user(request):
+        try:
+            user = User.objects.get(username=request.data['username'])
+        except User.DoesNotExist:
+            raise AuthenticationFailed('User does not exist')
+
+        return user
+
+    @staticmethod
+    def get_token_from_user(user):
+        pass
+
+    @staticmethod
+    def get_user_from_token(token):
+        pass
+
+    @staticmethod
+    def get_or_create_user_token(user):
+        # if user is logged in return existing token
+        # else create a new one
+        try:
+            token = Token.objects.get(user_id=user.id)
+        except Token.DoesNotExist:
+            token = Token()
+
+        return token

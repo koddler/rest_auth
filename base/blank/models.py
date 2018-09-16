@@ -86,9 +86,12 @@ class Token(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
+        self.set_key()
+        return super(Token, self).save(*args, **kwargs)
+
+    def set_key(self):
         if not self.key:
             self.key = self.generate_key()
-        return super(Token, self).save(*args, **kwargs)
 
     def generate_key(self):
         return binascii.hexlify(os.urandom(20)).decode()
