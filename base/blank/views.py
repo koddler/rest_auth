@@ -55,3 +55,27 @@ class LoginView(views.APIView):
             json.dumps({'error': 'Invalid password'}),
             status=401
         )
+
+
+class LogoutView(views.APIView):
+    """
+    1. Get token from header
+    2. If token is in database, delete it
+    3. else return error response
+    """
+
+    def post(self, request):
+        key = Utilities.get_token(request)
+        try:
+            token = Token.objects.get(key=key)
+        except Token.DoesNotExist:
+            return Response(
+                json.dumps({'error': 'Invalid credentials'}),
+                status=400
+            )
+
+        token.delete()
+        return Response(
+            json.dumps({'message': 'Successfully logged out'}),
+            status=200
+        )

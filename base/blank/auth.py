@@ -50,7 +50,12 @@ class Utilities:
 
     @staticmethod
     def get_token_from_user(user):
-        pass
+        try:
+            token = Token.objects.get(user_id=user.id)
+        except Token.DoesNotExist:
+            raise AuthenticationFailed('User not logged in')
+
+        return token
 
     @staticmethod
     def get_user_from_token(token):
